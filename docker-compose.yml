@@ -52,6 +52,7 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
     networks:
       - wordpress_network
+      - dokploy-network
     depends_on:
       - wordpress
 
@@ -64,3 +65,5 @@ volumes:
 networks:
   wordpress_network:
     driver: bridge
+  dokploy-network:
+    external: true
