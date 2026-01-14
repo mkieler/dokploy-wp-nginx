@@ -1,0 +1,66 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: wordpress_mysql
+    profiles:
+      - local
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - wordpress_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress_app
+    restart: unless-stopped
+    environment:
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST:-mysql}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX:-wp_}
+      WORDPRESS_DEBUG: ${WORDPRESS_DEBUG:-false}
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - wordpress_network
+    depends_on:
+      mysql:
+        condition: service_healthy
+        required: false
+
+  nginx:
+    image: nginx:alpine
+    container_name: wordpress_nginx
+    restart: unless-stopped
+    expose:
+      - 80
+    volumes:
+      - wordpress_data:/var/www/html:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    networks:
+      - wordpress_network
+    depends_on:
+      - wordpress
+
+volumes:
+  mysql_data:
+    driver: local
+  wordpress_data:
+    driver: local
+
+networks:
+  wordpress_network:
+    driver: bridge
