@@ -1,7 +1,6 @@
 services:
   mysql:
     image: mysql:8.0
-    container_name: wordpress_mysql
     profiles:
       - local
     restart: unless-stopped
@@ -22,7 +21,6 @@ services:
 
   wordpress:
     image: wordpress:fpm
-    container_name: wordpress_app
     restart: unless-stopped
     environment:
       WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST:-mysql}
@@ -43,7 +41,6 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: wordpress_nginx
     restart: unless-stopped
     expose:
       - 80
