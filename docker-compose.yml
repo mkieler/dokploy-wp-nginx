@@ -12,6 +12,7 @@ services:
     volumes:
       - wordpress_data:/var/www/html
     networks:
+      - internal
       - dokploy-network
 
   nginx:
@@ -24,14 +25,19 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
     networks:
+      - internal
       - dokploy-network
     depends_on:
       - wordpress
+    labels:
+      - "traefik.docker.network=internal"
 
 volumes:
   wordpress_data:
     driver: local
 
 networks:
+  internal:
+    driver: bridge
   dokploy-network:
     external: true
