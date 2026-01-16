@@ -27,6 +27,8 @@ services:
       - dokploy-network
     depends_on:
       - wordpress
+    labels:
+      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}"
 
 volumes:
   wordpress_data:
