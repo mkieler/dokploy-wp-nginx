@@ -10,7 +10,7 @@ services:
       WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX:-wp_}
       WORDPRESS_DEBUG: ${WORDPRESS_DEBUG:-false}
     volumes:
-      - ${COMPOSE_PROJECT_NAME:-wordpress}_data:/var/www/html
+      - wordpress_data:/var/www/html
     networks:
       - dokploy-network
 
@@ -20,7 +20,7 @@ services:
     expose:
       - 80
     volumes:
-      - ${COMPOSE_PROJECT_NAME:-wordpress}_data:/var/www/html:ro
+      - wordpress_data:/var/www/html:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
     networks:
@@ -29,7 +29,7 @@ services:
       - wordpress
 
 volumes:
-  ${COMPOSE_PROJECT_NAME:-wordpress}_data:
+  wordpress_data:
     driver: local
 
 networks:
