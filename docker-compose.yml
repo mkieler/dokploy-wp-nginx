@@ -11,8 +11,6 @@ services:
       WORDPRESS_DEBUG: ${WORDPRESS_DEBUG:-false}
     volumes:
       - wordpress_data:/var/www/html
-    networks:
-      - dokploy-network
 
   nginx:
     image: nginx:alpine
@@ -23,17 +21,9 @@ services:
       - wordpress_data:/var/www/html:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
-    networks:
-      - dokploy-network
     depends_on:
       - wordpress
-    labels:
-      - "traefik.docker.network=${COMPOSE_PROJECT_NAME}"
 
 volumes:
   wordpress_data:
     driver: local
-
-networks:
-  dokploy-network:
-    external: true
