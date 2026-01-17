@@ -9,12 +9,29 @@ services:
       WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
       WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
       WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX:-wp_}
-      WORDPRESS_DEBUG: ${WORDPRESS_DEBUG:-false}
+      WORDPRESS_DEBUG: ${WORDPRESS_DEBUG:-0}
+      WP_REDIS_HOST: redis
+      WP_REDIS_PORT: 6379
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_MEMORY_LIMIT', '256M');
+        define('WP_MAX_MEMORY_LIMIT', '512M');
+        define('WP_POST_REVISIONS', 5);
+        define('AUTOSAVE_INTERVAL', 120);
+        define('EMPTY_TRASH_DAYS', 14);
     volumes:
       - wordpress_data:/var/www/html
     networks:
       - default
       - dokploy-network
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
 
   nginx:
     image: nginx:alpine
@@ -30,6 +47,8 @@ services:
 
 volumes:
   wordpress_data:
+    driver: local
+  redis_data:
     driver: local
 
 networks:
