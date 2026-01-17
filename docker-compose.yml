@@ -18,6 +18,7 @@ services:
         define('WP_POST_REVISIONS', 5);
         define('AUTOSAVE_INTERVAL', 120);
         define('EMPTY_TRASH_DAYS', 14);
+        define('FS_METHOD', 'direct');
     volumes:
       - wordpress_data:/var/www/html
     networks:
