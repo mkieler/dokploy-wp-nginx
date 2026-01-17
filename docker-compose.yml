@@ -2,6 +2,7 @@ services:
   wordpress:
     image: wordpress:fpm
     restart: unless-stopped
+    user: www-data
     environment:
       WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST:-mysql}
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
